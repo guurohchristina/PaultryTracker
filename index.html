@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Poultry Farm Tracker</title>
+<style>
+:root{--bg:#111111;--card:rgba(255,255,255,.06);--ink:#f1efec;--mute:#a7a29b;--line:rgba(255,255,255,.12);--accent:#f4b942;--accent2:#e8792c;--on:#111;--good:#5cc78a;--bad:#f0806f;--tint:rgba(255,255,255,.07);color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,system-ui,"Segoe UI",Roboto,sans-serif}
+.hero{background:linear-gradient(120deg,var(--hero1),var(--hero2));color:#fff;padding:20px 16px 58px;position:relative;overflow:hidden}
+.hero-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hero h1{margin:0;font-size:clamp(22px,4vw,34px);line-height:1.15}
+.hero p{margin:4px 0 0;opacity:.92;font-size:14px}
+.pill{display:inline-block;background:rgba(255,255,255,.25);padding:3px 10px;border-radius:99px;font-size:12px;margin-bottom:8px;font-weight:600}
+.art{display:flex;align-items:flex-end;flex:none}.art svg:nth-child(1){width:clamp(80px,16vw,130px)}.art svg:nth-child(2){width:clamp(34px,6vw,54px);margin-left:-8px}.art svg:nth-child(3){width:clamp(28px,5vw,44px)}
+.wrap{max-width:1100px;margin:-40px auto 0;padding:0 16px 32px;position:relative}
+.tabs{display:flex;gap:8px;margin-bottom:14px;background:var(--card);padding:6px;border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.tabs button{flex:1;padding:11px;border:0;background:none;color:var(--ink);border-radius:11px;font-size:15px;font-weight:600}
+.tabs button.on{background:var(--accent);color:var(--on)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+h2{font-size:16px;margin:0 0 12px}
+.ic{width:44px;height:44px;display:block}
+.types{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.types button{padding:10px 4px;border:2px solid var(--line);background:var(--tint);color:var(--ink);border-radius:14px;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.types button.on{border-color:var(--accent);background:var(--card);font-weight:700;transform:translateY(-2px)}
+label{display:block;font-size:13px;color:var(--mute);margin:12px 0 4px}
+input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font-size:16px}
+.save{width:100%;margin-top:16px;padding:14px;border:0;border-radius:14px;background:linear-gradient(120deg,var(--accent2),var(--accent));color:#fff;font-size:17px;font-weight:700}
+.save:disabled{opacity:.5}.ok{color:var(--good);font-weight:600;margin-top:8px}
+.cols{display:grid;gap:14px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;align-items:center;gap:10px}
+.stat .ic{width:46px;height:46px;flex:none;background:var(--tint);border-radius:14px;padding:4px}
+.stat b{display:block;font-size:22px;line-height:1.1}.stat span{font-size:12px;color:var(--mute)}
+.bars{display:flex;align-items:flex-end;gap:6px;height:140px}
+.bar{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;font-size:11px;color:var(--mute);gap:2px}
+.bar i{display:block;width:100%;border-radius:8px 8px 2px 2px;background:linear-gradient(var(--accent2),var(--accent));min-height:3px}
+.bar.g i{background:linear-gradient(#8fdc9f,var(--good))}.bar.r i{background:linear-gradient(#f5a89c,var(--bad))}
+.row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.row:last-child{border:0}.row .ic{width:34px;height:34px;flex:none}.row div{flex:1}.row small{display:block;color:var(--mute)}
+.row button{border:0;background:none;color:var(--bad);font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:15px}th,td{padding:10px 4px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}th{color:var(--mute);font-weight:500;font-size:12px}.pos{color:var(--good)}.neg{color:var(--bad)}
+.msg{padding:10px 14px;border-radius:12px;background:var(--card);border:1px solid var(--line);color:var(--mute);font-size:14px;margin-bottom:12px}
+.empty{color:var(--mute);text-align:center;padding:14px 0}
+.hide{display:none}
+@media(min-width:700px){.types{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:900px){.hero{padding:30px 24px 70px}.wrap{padding:0 24px 40px}.entrycols{grid-template-columns:1.15fr .85fr;align-items:start}.charts{grid-template-columns:1fr 1fr}.tabs{max-width:420px}.stat b{font-size:26px}}
+body{background:radial-gradient(900px 500px at 15% -5%,#2F343C,transparent 70%),radial-gradient(700px 500px at 100% 25%,rgba(78,76,75,.55),transparent 70%),#111111;background-attachment:fixed;min-height:100vh}
+.hero{background:linear-gradient(120deg,#4E4C4B,#2F343C 65%,#1C1C1C);border-bottom:1px solid var(--line)}
+.card,.stat{background:var(--card);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);border:1px solid var(--line);box-shadow:0 8px 28px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08)}
+.glass{background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.04))}
+.bar i{box-shadow:0 0 14px rgba(244,185,66,.3)}
+.save{color:#1c1c1c}option{background:#1c1c1c;color:#f1efec}input::placeholder{color:#7d7870}
+body.hasnav{padding-bottom:86px}
+#nav{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;gap:2px;padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(28,28,28,.72);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-top:1px solid var(--line)}
+#nav button{flex:1;background:none;border:0;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;padding:5px 2px;border-radius:12px}
+#nav button .ic{width:26px;height:26px;opacity:.6}
+#nav button.on{color:var(--accent);background:rgba(255,255,255,.1)}#nav button.on .ic{opacity:1}
+@media(min-width:900px){body.hasnav{padding-bottom:0;padding-left:210px}#nav{right:auto;top:0;width:210px;flex-direction:column;justify-content:flex-start;gap:6px;padding:28px 12px;border-top:0;border-right:1px solid var(--line)}#nav button{flex:none;flex-direction:row;gap:12px;font-size:15px;padding:10px 12px;justify-content:flex-start}}
+:root{--line:#2F343C;--tint:#2F343C;--card:#1C1C1C}
+body{background:#111111}
+.hero{background:#2F343C}
+.card,.stat,.glass{background:#1C1C1C;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none}
+.save{background:#f4b942}
+.bar i{background:#f4b942;box-shadow:none}.bar.g i{background:#5cc78a}.bar.r i{background:#f0806f}
+#nav{background:#1C1C1C;backdrop-filter:none;-webkit-backdrop-filter:none}
+#nav button.on{background:#2F343C}
+.types button{background:#2F343C}.types button.on{background:#1C1C1C}
+.stat .ic{background:#2F343C}
+input,select{background:#111111}
+.msg{background:#1C1C1C}
+.scroll{overflow-x:auto}.wide{grid-column:1/-1}.dt td,.dt th{white-space:nowrap;padding:10px}.dt td:first-child,.dt th:first-child{position:sticky;left:0;background:#1C1C1C}
+.cols>*{min-width:0}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-egg" viewBox="0 0 64 64"><g fill="#ffffff" stroke="#111111" stroke-width="2.5" stroke-linejoin="round"><path d="M32 6C21 6 13 27 13 39a19 19 0 0 0 38 0C51 27 43 6 32 6z"/></g></symbol>
+<symbol id="i-eggs" viewBox="0 0 64 64"><use href="#i-egg" x="15" y="2" width="34" height="34"/><use href="#i-egg" x="-1" y="24" width="34" height="34"/><use href="#i-egg" x="29" y="24" width="34" height="34"/></symbol>
+<symbol id="i-hen" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 13L12 7L16 10L18 4L21 9L25 6L25 13"/><path d="M13 14L6 16L12 18"/><path d="M12 18C10 24 16 25 17 20"/><path d="M14 21C6 28 4 40 10 48C16 55 28 55 38 47"/><path d="M25 13C29 19 26 26 29 31C33 35 37 35 40 37"/><path d="M36 36C32 22 42 10 54 12C62 18 62 34 55 44"/><path d="M40 36C42 26 50 22 56 24"/><path d="M42 42C44 33 51 31 58 33"/><path d="M40 47C44 41 49 40 53 42"/><path d="M18 30C18 42 30 48 38 44C32 40 26 34 18 30z"/><circle cx="17.5" cy="14.5" r="1.4" fill="currentColor"/><path d="M22 53L20 60M30 52L31 60"/><path d="M15 62L24 61M27 62L36 61"/></g></symbol>
+<symbol id="i-henx" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-hen" width="64" height="64"/><path d="M14 33L34 53M34 33L14 53" stroke="#1c1c1c" stroke-width="10"/><path d="M14 33L34 53M34 33L14 53" stroke-width="4.5"/></g></symbol>
+<symbol id="i-sick" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-hen" width="64" height="64"/><circle cx="13" cy="13" r="11" fill="#1c1c1c"/><circle cx="13" cy="13" r="11"/><path d="M13 7v12M7 13h12" stroke-width="3.5"/></g></symbol>
+<symbol id="i-male" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-hen" width="64" height="64"/><circle cx="13" cy="13" r="11" fill="#1c1c1c"/><circle cx="13" cy="13" r="11"/><text x="13" y="19" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor" stroke="none">♂</text></g></symbol>
+<symbol id="i-female" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-hen" width="64" height="64"/><circle cx="13" cy="13" r="11" fill="#1c1c1c"/><circle cx="13" cy="13" r="11"/><text x="13" y="19" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor" stroke="none">♀</text></g></symbol>
+<symbol id="i-sold" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-hen" width="64" height="64"/><circle cx="13" cy="13" r="11" fill="#1c1c1c"/><circle cx="13" cy="13" r="11"/><text x="13" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor" stroke="none">₵</text></g></symbol>
+<symbol id="i-coin" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="26"/><circle cx="32" cy="32" r="19"/><text x="32" y="42" text-anchor="middle" font-size="28" font-weight="700" fill="currentColor" stroke="none">₵</text></g></symbol>
+<symbol id="i-eggsold" viewBox="0 0 64 64"><use href="#i-eggs" width="64" height="64"/><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="13" r="11" fill="#1c1c1c"/><circle cx="13" cy="13" r="11"/><text x="13" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor" stroke="none">₵</text></g></symbol>
+<symbol id="i-chick" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22A9 9 0 0 1 32 19C40 22 52 30 50 44C48 54 40 58 32 58C22 58 14 52 14 44C14 36 18 32 20 30C16 28 15 25 15 22z"/><path d="M15 20L8 23L15 26"/><circle cx="22" cy="19" r="1.6" fill="currentColor"/><path d="M24 13C23 8 28 8 27 13"/><path d="M30 42C32 50 40 51 45 45"/><path d="M28 58V62M38 58V62"/><path d="M50 42L57 38"/></g></symbol>
+<symbol id="i-report" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="6" width="40" height="52" rx="6"/><path d="M20 20h24M20 30h24M20 40h14"/></g></symbol>
+<symbol id="i-sack" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 14h28l6 12v28a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6V26z"/><path d="M18 14l-2-6h32l-2 6"/><path d="M32 52V32M32 38l-6-4M32 42l-6-4M32 34l6-4M32 40l6-4"/></g></symbol>
+</defs></svg>
+
+<header class="hero"><div class="hero-in">
+<div><span class="pill" id="role">Farm</span><h1 id="title">Your Farm Name</h1><p id="dateTxt"></p></div>
+<div class="art"><svg viewBox="-14 -4 86 72" style="color:#f1efec"><circle cx="32" cy="32" r="29" fill="none" stroke="currentColor" stroke-width="2"/><g transform="translate(-9 -1)" style="color:#f4b942"><path d="M14 21C6 28 4 40 10 48C16 55 28 55 38 47L38 36C35 33 29 33 29 31C26 26 29 19 25 13L13 14z" fill="#2F343C" stroke="none"/><use href="#i-hen" width="64" height="64"/></g></svg></div>
+</div></header>
+
+<div class="wrap">
+<nav id="nav" class="hide"></nav>
+<div id="note" class="msg hide"></div>
+
+<section id="v-record"><div class="cols entrycols">
+<div class="card"><h2>What happened?</h2><div class="types" id="types"></div>
+<label>Date</label><input type="date" id="date">
+<div id="sexW" class="hide"><label>Male or female?</label><select id="sex"><option value="">Choose...</option><option value="male">Male</option><option value="female">Female</option></select></div>
+<div id="catW" class="hide"><label>Category</label><select id="cat"><option>Medicine</option><option>Labour</option><option>Transport</option><option>Utilities</option><option>Repairs</option><option>Other</option></select></div>
+<div id="qtyW"><label id="qtyL">Number of birds</label><input type="number" inputmode="decimal" id="qty" min="0" placeholder="0"></div>
+<div id="amtW"><label id="amtL">Amount</label><input type="number" inputmode="decimal" id="amt" min="0" placeholder="0"></div>
+<label>Note (optional)</label><input type="text" id="nt" placeholder="e.g. coop B, buyer name">
+<button class="save" id="save">Save record</button><div id="saved" class="ok"></div></div>
+<div class="card"><h2 id="mineH">Today's entries</h2><div id="mine"></div></div>
+</div></section>
+
+<section id="v-home" class="hide">
+<div class="stats" id="homeStats"></div>
+<div class="card glass"><h2>Recent activity</h2><div id="recent"></div></div>
+</section>
+<section id="v-birds" class="hide">
+<div class="stats" id="birdStats"></div>
+<div class="cols charts"><div class="card glass wide"><h2>Daily bird records</h2><div id="birdList"></div></div><div class="card glass wide"><h2>Deaths, last 7 days</h2><div class="bars" id="cDead"></div></div></div>
+<p class="msg" style="margin-top:14px">Tip: record "Set male birds" and "Set female birds" once to start. The total is worked out for you.</p>
+</section>
+<section id="v-eggs" class="hide">
+<div class="stats" id="eggStats"></div>
+<div class="cols charts"><div class="card glass wide"><h2>Daily egg records</h2><div id="eggList"></div></div><div class="card glass wide"><h2>Eggs collected, last 7 days</h2><div class="bars" id="cEggs"></div></div></div>
+</section>
+<section id="v-money" class="hide">
+<div class="stats" id="moneyStats"></div>
+<div class="card glass" style="margin-bottom:14px"><h2>Sales vs expenses</h2><table id="pl"></table></div>
+<div class="cols charts"><div class="card glass wide"><h2>Daily finances</h2><div id="finTbl"></div></div><div class="card glass wide"><h2>Expenses this month</h2><div id="cats"></div></div><div class="card glass"><h2>Sales, last 7 days</h2><div class="bars" id="cSales"></div></div><div class="card glass"><h2>Expenses, last 7 days</h2><div class="bars" id="cExp"></div></div></div>
+</section>
+<section id="v-reports" class="hide">
+<div class="card glass"><h2>Daily report</h2><label style="margin-top:0">Show one date only (clear it to see all dates)</label><input type="date" id="repDate"><div id="repTbl" style="margin-top:14px"></div><div id="repList"></div></div>
+</section>
+</div>
+
+<script>
+var TYPES={
+ male:{n:"Set male birds",ic:"i-male",q:"Number of male birds"},
+ female:{n:"Set female birds",ic:"i-female",q:"Number of female birds"},
+ sold:{n:"Birds sold",ic:"i-sold",q:"Number of birds sold",a:"Total amount received",sex:1},
+ added:{n:"New birds added",ic:"i-chick",q:"Number of new birds",a:"Cost (optional)",sex:1},
+ died:{n:"Birds died",ic:"i-henx",q:"Number of birds died",sex:1},
+ sick:{n:"Sick birds",ic:"i-sick",q:"Number of sick birds"},
+ eggs:{n:"Eggs collected",ic:"i-eggs",q:"Number of eggs collected"},
+ eggsold:{n:"Eggs sold",ic:"i-eggsold",q:"Number of eggs sold",a:"Total amount received"},
+ feed:{n:"Feed bought",ic:"i-sack",q:"Feed (kg or bags)",a:"Cost"},
+ expense:{n:"Expense",ic:"i-coin",a:"Amount spent",noq:1,cat:1}
+};
+var cur="male",recs=[],localRecs=[],uid="anon",isAdmin=false;
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function ymd(d){var m=d.getMonth()+1,x=d.getDate();return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(x<10?"0":"")+x}
+function today(){return ymd(new Date())}
+function num(x){return Number(x)||0}
+function fmt(n){return Math.round(n*100)/100}
+function gh(n){return "GH₵"+fmt(n)}
+function ic(id,c){return '<svg class="ic '+(c||"")+'" viewBox="0 0 64 64"><use href="#'+id+'"/></svg>'}
+$("dateTxt").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"});
+
+/* ===== DATA LAYER: swap this object for fetch() calls to your Neon-backed API =====
+   list(): returns all records; add(rec); remove(id).  Record shape:
+   {type, qty, amount, note, cat, date:"YYYY-MM-DD", by, ts} */
+var store={db:null,
+ add:function(r){return this.db.collection("records").add(r)},
+ remove:function(id){return this.db.collection("records").doc(id).delete()},
+ watch:function(cb,err){return this.db.collection("records").orderBy("ts","desc").limit(1000).onSnapshot(function(s){cb(s.docs.map(function(x){var o=x.data()||{};o.id=x.id;return o}))},err)}
+};
+
+function sum(t,d){return recs.reduce(function(s,r){return s+(r.type===t&&(!d||r.date===d)?num(r.qty):0)},0)}
+function expAmt(r){return(r.type==="expense"||r.type==="feed"||r.type==="added")?num(r.amount):0}
+function saleAmt(r){return(r.type==="sold"||r.type==="eggsold")?num(r.amount):0}
+function daily(){var d=$("repDate").value,rows=dayRows();
+ if(d)rows=rows.filter(function(o){return o.date===d});
+ $("repTbl").innerHTML=d&&!rows.length?'<div class="empty">No records on this date.</div>':tbl(REPC,rows);
+ var day=d?recs.filter(function(r){return r.date===d}):[];
+ $("repList").innerHTML=day.length?'<h2 style="margin-top:18px">Entries on this date</h2>'+day.map(rowHtml).join(""):""}
+function cnt(x){return recs.reduce(function(s,r){var q=num(r.qty);if(r.type===x)return s+q;if(r.sex!==x)return s;if(r.type==="added")return s+q;if(r.type==="sold"||r.type==="died")return s-q;return s},0)}
+function total(){return recs.reduce(function(s,r){var q=num(r.qty);return s+(r.type==="total"||r.type==="added"?q:(r.type==="sold"||r.type==="died"?-q:0))},0)}
+function period(start){var s=0,e=0;recs.forEach(function(r){if(r.date>=start){s+=saleAmt(r);e+=expAmt(r)}});return[s,e]}
+
+function buildTypes(){
+ $("types").innerHTML=Object.keys(TYPES).map(function(k){return '<button data-k="'+k+'" class="'+(k===cur?"on":"")+'">'+ic(TYPES[k].ic)+TYPES[k].n+'</button>'}).join("");
+ Array.prototype.forEach.call($("types").children,function(b){b.onclick=function(){cur=b.dataset.k;buildTypes();labels()}});
+}
+function labels(){var t=TYPES[cur];$("qtyW").classList.toggle("hide",!!t.noq);$("catW").classList.toggle("hide",!t.cat);$("sexW").classList.toggle("hide",!t.sex);$("amtW").classList.toggle("hide",!t.a);if(t.q)$("qtyL").textContent=t.q;if(t.a)$("amtL").textContent=t.a+" (GH₵)"}
+
+function rowHtml(r){var t=TYPES[r.type]||{n:r.type,ic:"i-egg"};
+ return '<div class="row">'+ic(t.ic)+'<div><b>'+esc(t.n)+': '+esc(r.type==="expense"?r.cat:r.qty)+(r.sex?' ('+esc(r.sex)+')':'')+'</b>'+(num(r.amount)?' · '+gh(r.amount):'')+'<small>'+esc(r.date)+(r.note?' · '+esc(r.note):'')+'</small></div>'+(isAdmin&&r.id?'<button data-del="'+esc(r.id)+'">Delete</button>':'')+'</div>'}
+
+function chart(id,fn,cls){
+ var days=[],i,d;for(i=6;i>=0;i--){d=new Date();d.setDate(d.getDate()-i);days.push(d)}
+ var vals=days.map(function(x){var k=ymd(x);return recs.reduce(function(s,r){return s+(r.date===k?fn(r):0)},0)});
+ var mx=Math.max.apply(null,vals.concat([1]));
+ $(id).innerHTML=vals.map(function(v,j){return '<div class="bar '+cls+'"><span>'+(v?fmt(v):"")+'</span><i style="height:'+Math.round(v/mx*70)+'%"></i><span>'+["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][days[j].getDay()]+'</span></div>'}).join("")}
+
+var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function dd(d){var p=d.split("-");return +p[2]+" "+MON[+p[1]-1]+" "+p[0]}
+function z(n){return n?fmt(n):"\u2013"}
+function g(n){return n?gh(n):"\u2013"}
+function v(k){return function(o){return z(o[k])}}
+function gv(k){return function(o){return g(o[k])}}
+function bo(k){return function(o){return "<b>"+o[k]+"</b>"}}
+var cD=["Date",function(o){return dd(o.date)}];
+var cN=["Net",function(o){var n=o.sa-o.ex;return '<span class="'+(n<0?"neg":"pos")+'">'+gh(n)+'</span>'}];
+var EGGC=[cD,["Collected",v("ec")],["Sold",v("es")],["In stock",bo("E")]];
+var BIRDC=[cD,["Male",function(o){return o.M}],["Female",function(o){return o.F}],["Total",bo("T")],["Sold",v("bs")],["Died",v("dd")],["Sick",v("sk")],["New",v("nw")]];
+var FINC=[cD,["Birds sold",v("bs")],["Eggs sold",v("es")],["Sales",gv("sa")],["Expenses",gv("ex")],cN];
+var REPC=[cD,["Birds sold",v("bs")],["Eggs sold",v("es")],["Sales",gv("sa")],["Expenses",gv("ex")],cN,["Eggs collected",v("ec")],["Eggs in stock",bo("E")],["Died",v("dd")],["Sick",v("sk")],["New birds",v("nw")],["Total birds",bo("T")]];
+function tbl(cols,rows){return rows.length?'<div class="scroll"><table class="dt"><tr>'+cols.map(function(c){return '<th>'+c[0]+'</th>'}).join("")+'</tr>'+rows.map(function(o){return '<tr>'+cols.map(function(c){return '<td>'+c[1](o)+'</td>'}).join("")+'</tr>'}).join("")+'</table></div>':'<div class="empty">No records yet.</div>'}
+function dayRows(){var ds=[],M=0,F=0,E=0;
+ recs.forEach(function(r){if(ds.indexOf(r.date)<0)ds.push(r.date)});ds.sort();
+ return ds.map(function(d){var o={date:d,bs:0,es:0,ec:0,dd:0,sk:0,nw:0,sa:0,ex:0,bd:0};
+  recs.forEach(function(r){if(r.date!==d)return;var q=num(r.qty),t=r.type;
+   if(t==="male"){M+=q;o.bd=1}else if(t==="female"){F+=q;o.bd=1}
+   else if(t==="added"){o.nw+=q;o.bd=1;if(r.sex==="male")M+=q;else if(r.sex==="female")F+=q}
+   else if(t==="sold"||t==="died"){o[t==="sold"?"bs":"dd"]+=q;o.bd=1;if(r.sex==="male")M-=q;else if(r.sex==="female")F-=q}
+   else if(t==="sick"){o.sk+=q;o.bd=1}
+   else if(t==="eggs"){o.ec+=q;E+=q}else if(t==="eggsold"){o.es+=q;E-=q}
+   o.sa+=saleAmt(r);o.ex+=expAmt(r)});
+  o.M=M;o.F=F;o.T=M+F;o.E=E;return o}).reverse()}
+function render(){
+ var td=today(),mine=(isAdmin?recs:localRecs).filter(function(r){return r.date===td});
+ $("mineH").textContent=isAdmin?"Today's entries":"Saved this visit";
+ $("mine").innerHTML=mine.length?mine.map(rowHtml).join(""):'<div class="empty">'+ic("i-egg","")+'Nothing recorded yet today.</div>';
+ if(!isAdmin)return;
+ var mm=cnt("male"),ff=cnt("female"),tt=mm+ff;
+ var st=[["Total birds in stock",tt,"i-hen"],["Male birds",mm,"i-male"],["Female birds",ff,"i-female"],["Sales today",gh(period(td)[0]),"i-coin"],["Birds sold today",sum("sold",td),"i-sold"],["Eggs in stock",sum("eggs")-sum("eggsold"),"i-eggs"],["Eggs collected today",sum("eggs",td),"i-eggs"],["Eggs sold today",sum("eggsold",td),"i-eggsold"],["Deaths today",sum("died",td),"i-henx"],["Sick reported today",sum("sick",td),"i-sick"],["Expenses today",gh(period(td)[1]),"i-coin"],["New birds today",sum("added",td),"i-chick"]];
+ function cards(ids){return ids.map(function(i){var x=st[i];return '<div class="stat">'+ic(x[2])+'<div><b>'+esc(x[1])+'</b><span>'+x[0]+'</span></div></div>'}).join("")}
+ function listOf(ts){var a=recs.filter(function(r){return ts.indexOf(r.type)>-1}).slice(0,15);return a.length?a.map(rowHtml).join(""):'<div class="empty">No records yet.</div>'}
+ st[3][0]="Total made today";var nt=gh(period(td)[0]-period(td)[1]);$("homeStats").innerHTML=cards([0,1,2,5]);$("birdStats").innerHTML=cards([0,1,2,8,9,11]);$("eggStats").innerHTML=cards([5,6]);$("moneyStats").innerHTML=cards([4,7,10,3])+'<div class="stat">'+ic("i-coin")+'<div><b>'+esc(nt)+'</b><span>Net today</span></div></div>';
+ var DR=dayRows();$("birdList").innerHTML=tbl(BIRDC,DR.filter(function(o){return o.bd}));$("eggList").innerHTML=tbl(EGGC,DR.filter(function(o){return o.ec||o.es}));$("finTbl").innerHTML=tbl(FINC,DR.filter(function(o){return o.sa||o.ex}));
+ chart("cSales",saleAmt,"");chart("cExp",expAmt,"r");
+ chart("cEggs",function(r){return r.type==="eggs"?num(r.qty):0},"g");chart("cDead",function(r){return r.type==="died"?num(r.qty):0},"r");
+ var d=new Date(),k=(d.getDay()+6)%7;d.setDate(d.getDate()-k);
+ var rows=[["Today",td],["This week",ymd(d)],["This month",td.slice(0,8)+"01"]];
+ $("pl").innerHTML='<tr><th></th><th>Sales</th><th>Expenses</th><th>Net</th></tr>'+rows.map(function(x){var p=period(x[1]),n=p[0]-p[1];return '<tr><td>'+x[0]+'</td><td>'+gh(p[0])+'</td><td>'+gh(p[1])+'</td><td class="'+(n<0?"neg":"pos")+'"><b>'+gh(n)+'</b></td></tr>'}).join("");
+ var c={};recs.forEach(function(r){var a=expAmt(r);if(a&&r.date>=rows[2][1]){var n=r.type==="feed"?"Feed":r.type==="added"?"Birds purchased":(r.cat||"Other");c[n]=(c[n]||0)+a}});
+ var ks=Object.keys(c).sort(function(a,b){return c[b]-c[a]});
+ $("cats").innerHTML=ks.length?ks.map(function(n){return '<div class="row"><div>'+esc(n)+'</div><b>'+gh(c[n])+'</b></div>'}).join(""):'<div class="empty">No expenses this month.</div>';
+ daily();$("recent").innerHTML=recs.length?recs.slice(0,20).map(rowHtml).join(""):'<div class="empty">No records yet.</div>';
+ Array.prototype.forEach.call(document.querySelectorAll("[data-del]"),function(b){b.onclick=function(){if(confirm("Delete this record?"))store.remove(b.dataset.del).catch(function(){alert("Could not delete")})}});
+}
+var NAV=[["home","Home","i-hen"],["record","Record","i-chick"],["birds","Birds","i-male"],["eggs","Eggs","i-eggs"],["money","Finances","i-coin"],["reports","Reports","i-report"]];
+var FARM_NAME="Your Farm Name";
+function heroFor(v){var h=NAV.filter(function(x){return x[0]===v})[0];$("title").textContent=v==="home"?FARM_NAME:(h?h[1]:"Record");$("dateTxt").classList.toggle("hide",v==="home")}
+function setView(v){heroFor(v);NAV.forEach(function(x){var e=$("v-"+x[0]);if(e)e.classList.toggle("hide",x[0]!==v)});Array.prototype.forEach.call($("nav").children,function(b){b.classList.toggle("on",b.dataset.v===v)});window.scrollTo(0,0)}
+function buildNav(){var n=$("nav");n.classList.remove("hide");document.body.classList.add("hasnav");n.innerHTML=NAV.map(function(x){return '<button data-v="'+x[0]+'">'+ic(x[2])+x[1]+'</button>'}).join("");Array.prototype.forEach.call(n.children,function(b){b.onclick=function(){setView(b.dataset.v)}})}
+
+$("save").onclick=function(){
+ var noq=!!TYPES[cur].noq,q=noq?0:num($("qty").value);
+ if(noq?!num($("amt").value):!q){alert("Please enter a number");return}
+ if(!store.db){alert("Not connected. Open this page from the shared link and sign in.");return}
+ if(TYPES[cur].sex&&!$("sex").value){alert("Please choose male or female");return}
+ var b=$("save");b.disabled=true;
+ var rec={type:cur,qty:q,amount:num($("amt").value),note:$("nt").value.trim(),cat:TYPES[cur].cat?$("cat").value:"",sex:TYPES[cur].sex?$("sex").value:"",date:$("date").value||today(),by:uid,ts:Date.now()};
+ store.add(rec).then(function(){
+  if(!isAdmin){localRecs.unshift(rec);render()}
+  $("qty").value="";$("amt").value="";$("nt").value="";$("sex").value="";
+  $("saved").textContent="Saved ✓";setTimeout(function(){$("saved").textContent=""},2500);
+ }).catch(function(){alert("Could not save. Check your connection and try again.")}).then(function(){b.disabled=false});
+};
+function note(t){var n=$("note");n.textContent=t;n.classList.remove("hide")}
+buildTypes();labels();heroFor("record");$("date").value=today();$("repDate").onchange=render;render();
+
+(async function(){
+ try{
+  if(!window.claude){note("Open this page from its shared link to save records.");return}
+  var user=await claude.use("user");store.db=await claude.use("db");
+  if(!store.db){note("Please sign in to record or view data.");return}
+  if(user){try{uid=String(await user.id())}catch(e){}isAdmin=!!user.canEdit()}
+  $("role").textContent=isAdmin?"Admin":"Worker";
+  if(isAdmin){buildNav();setView("home");store.watch(function(a){recs=a;render()},function(){note("Could not load data.")})}
+  render();
+ }catch(e){note("Could not connect.")}
+})();
+</script></body></html>
