@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guide Farms</title>
+<style>
+:root{--bg:#111111;--card:rgba(255,255,255,.06);--ink:#f1efec;--mute:#a7a29b;--line:rgba(255,255,255,.12);--accent:#f4b942;--accent2:#e8792c;--on:#111;--good:#5cc78a;--bad:#f0806f;--tint:rgba(255,255,255,.07);color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,system-ui,"Segoe UI",Roboto,sans-serif}
+.hero{background:linear-gradient(120deg,var(--hero1),var(--hero2));color:#fff;padding:20px 16px 58px;position:relative;overflow:hidden}
+.hero-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hero h1{margin:0;font-size:clamp(22px,4vw,34px);line-height:1.15}
+.hero p{margin:4px 0 0;opacity:.92;font-size:14px}
+.pill{display:inline-block;background:rgba(255,255,255,.25);padding:3px 10px;border-radius:99px;font-size:12px;margin-bottom:8px;font-weight:600}
+.art{display:flex;align-items:flex-end;flex:none}.art svg:nth-child(1){width:clamp(80px,16vw,130px)}.art svg:nth-child(2){width:clamp(34px,6vw,54px);margin-left:-8px}.art svg:nth-child(3){width:clamp(28px,5vw,44px)}
+.wrap{max-width:1100px;margin:-40px auto 0;padding:0 16px 32px;position:relative}
+.tabs{display:flex;gap:8px;margin-bottom:14px;background:var(--card);padding:6px;border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.tabs button{flex:1;padding:11px;border:0;background:none;color:var(--ink);border-radius:11px;font-size:15px;font-weight:600}
+.tabs button.on{background:var(--accent);color:var(--on)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+h2{font-size:16px;margin:0 0 12px}
+.ic{width:44px;height:44px;display:block}
+.types{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.types button{padding:10px 4px;border:2px solid var(--line);background:var(--tint);color:var(--ink);border-radius:14px;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.types button.on{border-color:var(--accent);background:var(--card);font-weight:700;transform:translateY(-2px)}
+label{display:block;font-size:13px;color:var(--mute);margin:12px 0 4px}
+input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font-size:16px}
+.save{width:100%;margin-top:16px;padding:14px;border:0;border-radius:14px;background:linear-gradient(120deg,var(--accent2),var(--accent));color:#fff;font-size:17px;font-weight:700}
+.save:disabled{opacity:.5}.ok{color:var(--good);font-weight:600;margin-top:8px}
+.cols{display:grid;gap:14px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;align-items:center;gap:10px}
+.stat .ic{width:46px;height:46px;flex:none;background:var(--tint);border-radius:14px;padding:4px}
+.stat b{display:block;font-size:22px;line-height:1.1}.stat span{font-size:12px;color:var(--mute)}
+.bars{display:flex;align-items:flex-end;gap:6px;height:140px}
+.bar{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;font-size:11px;color:var(--mute);gap:2px}
+.bar i{display:block;width:100%;border-radius:8px 8px 2px 2px;background:linear-gradient(var(--accent2),var(--accent));min-height:3px}
+.bar.g i{background:linear-gradient(#8fdc9f,var(--good))}.bar.r i{background:linear-gradient(#f5a89c,var(--bad))}
+.row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.row:last-child{border:0}.row .ic{width:34px;height:34px;flex:none}.row div{flex:1}.row small{display:block;color:var(--mute)}
+.row button{border:0;background:none;color:var(--bad);font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:15px}th,td{padding:10px 4px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}th{color:var(--mute);font-weight:500;font-size:12px}.pos{color:var(--good)}.neg{color:var(--bad)}
+.msg{padding:10px 14px;border-radius:12px;background:var(--card);border:1px solid var(--line);color:var(--mute);font-size:14px;margin-bottom:12px}
+.empty{color:var(--mute);text-align:center;padding:14px 0}
+.hide{display:none}
+@media(min-width:700px){.types{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:900px){.hero{padding:30px 24px 70px}.wrap{padding:0 24px 40px}.entrycols{grid-template-columns:1.15fr .85fr;align-items:start}.charts{grid-template-columns:1fr 1fr}.tabs{max-width:420px}.stat b{font-size:26px}}
+body{background:radial-gradient(900px 500px at 15% -5%,#2F343C,transparent 70%),radial-gradient(700px 500px at 100% 25%,rgba(78,76,75,.55),transparent 70%),#111111;background-attachment:fixed;min-height:100vh}
+.hero{background:linear-gradient(120deg,#4E4C4B,#2F343C 65%,#1C1C1C);border-bottom:1px solid var(--line)}
+.card,.stat{background:var(--card);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);border:1px solid var(--line);box-shadow:0 8px 28px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08)}
+.glass{background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.04))}
+.bar i{box-shadow:0 0 14px rgba(244,185,66,.3)}
+.save{color:#1c1c1c}option{background:#1c1c1c;color:#f1efec}input::placeholder{color:#7d7870}
+body.hasnav{padding-bottom:86px}
+#nav{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;gap:2px;padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(28,28,28,.72);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-top:1px solid var(--line)}
+#nav button{flex:1;background:none;border:0;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;padding:5px 2px;border-radius:12px}
+#nav button .ic{width:26px;height:26px;opacity:.6}
+#nav button.on{color:var(--accent);background:rgba(255,255,255,.1)}#nav button.on .ic{opacity:1}
+@media(min-width:900px){body.hasnav{padding-bottom:0;padding-left:210px}#nav{right:auto;top:0;width:210px;flex-direction:column;justify-content:flex-start;gap:6px;padding:28px 12px;border-top:0;border-right:1px solid var(--line)}#nav button{flex:none;flex-direction:row;gap:12px;font-size:15px;padding:10px 12px;justify-content:flex-start}}
+:root{--line:#2F343C;--tint:#2F343C;--card:#1C1C1C}
+body{background:#111111}
+.hero{background:#2F343C}
+.card,.stat,.glass{background:#1C1C1C;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none}
+.save{background:#f4b942}
+.bar i{background:#f4b942;box-shadow:none}.bar.g i{background:#5cc78a}.bar.r i{background:#f0806f}
+#nav{background:#1C1C1C;backdrop-filter:none;-webkit-backdrop-filter:none}
+#nav button.on{background:#2F343C}
+.types button{background:#2F343C}.types button.on{background:#1C1C1C}
+.stat .ic{background:#2F343C}
+input,select{background:#111111}
+.msg{background:#1C1C1C}
+.scroll{overflow-x:auto}.wide{grid-column:1/-1}.dt td,.dt th{white-space:nowrap;padding:10px}.dt td:first-child,.dt th:first-child{position:sticky;left:0;background:#1C1C1C}
+.cols>*{min-width:0}
+#login{position:fixed;inset:0;z-index:100;background:#111111;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+#login.hide{display:none}
+.lbox{width:100%;max-width:380px;background:#1C1C1C;border:1px solid #2F343C;border-radius:20px;padding:24px;text-align:center}
+.lbox form{text-align:left}.llogo{width:130px;margin:0 auto 6px;display:block}
+.lbox h1{font-size:24px;margin:4px 0}.lbox p{color:var(--mute);margin:4px 0 14px;font-size:14px}
+.pw{position:relative}.pw input{padding-right:76px}.pw button{position:absolute;right:6px;top:6px;bottom:6px;border:0;background:#2F343C;color:var(--ink);border-radius:8px;padding:0 12px;font-size:13px}
+.err{color:var(--bad);font-size:14px;min-height:20px;margin-top:8px}
+.row.u{flex-wrap:wrap}.row .act{width:100%;display:flex;gap:6px;flex-wrap:wrap;padding-left:44px}
+.ubtn{border:1px solid #2F343C;background:none;color:var(--ink);border-radius:8px;padding:6px 10px;font-size:12px}
+#signout{border:0;color:#fff;cursor:pointer;margin-left:6px;font-family:inherit}
+@media(max-width:899px){#nav button{font-size:10.5px;padding:5px 0}}
+#nav.hide{display:none}
+.row .ubtn{border:1px solid #2F343C;background:none;color:var(--ink);padding:6px 10px;font-size:12px}
+.sec{font-size:20px;margin:28px 0 12px}.warn{color:var(--accent)}
+@media(max-width:899px){#nav button{font-size:10px}}
+.stat b{white-space:nowrap}
+@media print{body *{visibility:hidden}#repCard,#repCard *{visibility:visible}#repCard{position:absolute;left:0;top:0;width:100%;border:0}#repCard,#repCard *{color:#000!important;background:#fff!important;border-color:#999!important}#repCard .nop,#repCard input,#repCard label{display:none!important}}
+.row button[data-edit]{color:var(--accent)}
+.more{display:block;width:100%;margin-top:12px;padding:11px;border:1px solid #2F343C;background:#111111;color:var(--ink);border-radius:10px;font-size:14px}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-egg" viewBox="0 0 64 64"><g fill="#ffffff" stroke="#111111" stroke-width="2.5" stroke-linejoin="round"><path d="M32 6C21 6 13 27 13 39a19 19 0 0 0 38 0C51 27 43 6 32 6z"/></g></symbol>
+<symbol id="i-eggs" viewBox="0 0 64 64"><use href="#i-egg" x="15" y="2" width="34" height="34"/><use href="#i-egg" x="-1" y="24" width="34" height="34"/><use href="#i-egg" x="29" y="24" width="34" height="34"/></symbol>
+<symbol id="i-hen" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 13L12 7L16 10L18 4L21 9L25 6L25 13"/><path d="M13 14L6 16L12 18"/><path d="M12 18C10 24 16 25 17 20"/><path d="M14 21C6 28 4 40 10 48C16 55 28 55 38 47"/><path d="M25 13C29 19 26 26 29 31C33 35 37 35 40 37"/><path d="M36 36C32 22 42 10 54 12C62 18 62 34 55 44"/><path d="M40 36C42 26 50 22 56 24"/><path d="M42 42C44 33 51 31 58 33"/><path d="M40 47C44 41 49 40 53 42"/><path d="M18 30C18 42 30 48 38 44C32 40 26 34 18 30z"/><circle cx="17.5" cy="14.5" r="1.4" fill="currentColor"/><path d="M22 53L20 60M30 52L31 60"/><path d="M15 62L24 61M27 62L36 61"/></g></symbol>
+<symbol id="i-henx" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-hen" width="64" height="64"/><path d="M14 33L34 53M34 33L14 53" stroke="#1c1c1c" stroke-width="10"/><path d="M14 33L34 53M34 33L14 53" stroke-width="4.5"/></g></symbol>
+<symbol id="i-sick" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-hen" width="64" height="64"/><circle cx="13" cy="13" r="11" fill="#1c1c1c"/><circle cx="13" cy="13" r="11"/><path d="M13 7v12M7 13h12" stroke-width="3.5"/></g></symbol>
+<symbol id="i-male" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-hen" width="64" height="64"/><circle cx="13" cy="13" r="11" fill="#1c1c1c"/><circle cx="13" cy="13" r="11"/><text x="13" y="19" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor" stroke="none">♂</text></g></symbol>
+<symbol id="i-female" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-hen" width="64" height="64"/><circle cx="13" cy="13" r="11" fill="#1c1c1c"/><circle cx="13" cy="13" r="11"/><text x="13" y="19" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor" stroke="none">♀</text></g></symbol>
+<symbol id="i-sold" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-hen" width="64" height="64"/><circle cx="13" cy="13" r="11" fill="#1c1c1c"/><circle cx="13" cy="13" r="11"/><text x="13" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor" stroke="none">₵</text></g></symbol>
+<symbol id="i-coin" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="26"/><circle cx="32" cy="32" r="19"/><text x="32" y="42" text-anchor="middle" font-size="28" font-weight="700" fill="currentColor" stroke="none">₵</text></g></symbol>
+<symbol id="i-eggsold" viewBox="0 0 64 64"><use href="#i-eggs" width="64" height="64"/><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="13" r="11" fill="#1c1c1c"/><circle cx="13" cy="13" r="11"/><text x="13" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor" stroke="none">₵</text></g></symbol>
+<symbol id="i-chick" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22A9 9 0 0 1 32 19C40 22 52 30 50 44C48 54 40 58 32 58C22 58 14 52 14 44C14 36 18 32 20 30C16 28 15 25 15 22z"/><path d="M15 20L8 23L15 26"/><circle cx="22" cy="19" r="1.6" fill="currentColor"/><path d="M24 13C23 8 28 8 27 13"/><path d="M30 42C32 50 40 51 45 45"/><path d="M28 58V62M38 58V62"/><path d="M50 42L57 38"/></g></symbol>
+<symbol id="i-report" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="6" width="40" height="52" rx="6"/><path d="M20 20h24M20 30h24M20 40h14"/></g></symbol>
+<symbol id="i-users" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="22" r="9"/><path d="M8 54c0-10 7-16 16-16s16 6 16 16"/><circle cx="47" cy="24" r="7"/><path d="M43 39c10-2 16 4 16 15"/></g></symbol>
+<symbol id="i-pill" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="22" width="52" height="20" rx="10" transform="rotate(-35 32 32)"/><path d="M32 22V42" transform="rotate(-35 32 32)"/></g></symbol>
+<symbol id="i-sickrx" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-hen" width="64" height="64"/><circle cx="13" cy="13" r="11" fill="#1c1c1c"/><circle cx="13" cy="13" r="11"/><rect x="5" y="9" width="16" height="8" rx="4" transform="rotate(-35 13 13)"/></g></symbol>
+<symbol id="i-sackplus" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#i-sack" width="64" height="64"/><circle cx="13" cy="13" r="11" fill="#1c1c1c"/><circle cx="13" cy="13" r="11"/><path d="M13 7v12M7 13h12" stroke-width="3.5"/></g></symbol>
+<symbol id="i-sack" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 14h28l6 12v28a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6V26z"/><path d="M18 14l-2-6h32l-2 6"/><path d="M32 52V32M32 38l-6-4M32 42l-6-4M32 34l6-4M32 40l6-4"/></g></symbol>
+</defs></svg>
+
+<div id="login"><div class="lbox">
+<svg class="llogo" viewBox="-14 -4 86 72" style="color:#f1efec"><circle cx="32" cy="32" r="29" fill="none" stroke="currentColor" stroke-width="2"/><g transform="translate(-9 -1)" style="color:#f4b942"><path d="M14 21C6 28 4 40 10 48C16 55 28 55 38 47L38 36C35 33 29 33 29 31C26 26 29 19 25 13L13 14z" fill="#1C1C1C" stroke="none"/><use href="#i-hen" width="64" height="64"/></g></svg>
+<h1 id="ltitle">Guide Farms</h1><p>Sign in to continue</p>
+<form id="lf"><label>Username</label><input id="lu" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
+<label>Password</label><div class="pw"><input id="lp" type="password" autocomplete="current-password"><button type="button" id="lshow">Show</button></div>
+<div class="err" id="lerr"></div><button class="save" type="submit" style="margin-top:6px">Sign in</button></form>
+<p style="margin-top:16px">Accounts are created by the farm admin.</p>
+<p class="msg" id="demoHint" style="margin:0">Demo login (delete this note later): admin / admin123</p>
+</div></div>
+<header class="hero"><div class="hero-in">
+<div><span class="pill" id="role">Farm</span><button class="pill hide" id="signout">Sign out</button><h1 id="title">Guide Farms</h1><p id="dateTxt"></p></div>
+<div class="art"><svg viewBox="-14 -4 86 72" style="color:#f1efec"><circle cx="32" cy="32" r="29" fill="none" stroke="currentColor" stroke-width="2"/><g transform="translate(-9 -1)" style="color:#f4b942"><path d="M14 21C6 28 4 40 10 48C16 55 28 55 38 47L38 36C35 33 29 33 29 31C26 26 29 19 25 13L13 14z" fill="#2F343C" stroke="none"/><use href="#i-hen" width="64" height="64"/></g></svg></div>
+</div></header>
+
+<div class="wrap">
+<nav id="nav" class="hide"></nav>
+<div id="note" class="msg hide"></div>
+
+<section id="v-record"><div class="cols entrycols">
+<div class="card"><h2>What happened?</h2><div class="types" id="types"></div>
+<label>Date</label><input type="date" id="date">
+<div id="timeW" class="hide"><label>Time</label><input type="time" id="tm"></div>
+<div id="sexW" class="hide"><label>Male or female?</label><select id="sex"><option value="">Choose...</option><option value="male">Male</option><option value="female">Female</option></select></div>
+<div id="catW" class="hide"><label>Category</label><select id="cat"><option>Feed</option><option>Medicine</option><option>Labour</option><option>Transport</option><option>Utilities</option><option>Repairs</option><option>Other</option></select></div>
+<div id="qtyW"><label id="qtyL">Number of birds</label><input type="number" inputmode="decimal" id="qty" min="0" placeholder="0"></div>
+<div id="medW" class="hide"><label>Medication given</label><input id="md" placeholder="e.g. Amprolium" autocomplete="off"></div>
+<div id="illW" class="hide"><label>Type of sickness</label><input id="il" placeholder="e.g. Coccidiosis" autocomplete="off"></div>
+<div id="nextW" class="hide"><label>Next medication date (starts the countdown)</label><input type="date" id="nx"></div>
+<div id="amtW"><label id="amtL">Amount</label><input type="number" inputmode="decimal" id="amt" min="0" placeholder="0"></div>
+<label>Note (optional)</label><input type="text" id="nt" placeholder="e.g. coop B, buyer name">
+<button class="save" id="save">Save record</button><div id="saved" class="ok"></div></div>
+<div class="card"><h2 id="mineH">Today's entries</h2><div id="mine"></div></div>
+</div></section>
+
+<section id="v-home" class="hide">
+<div class="stats" id="homeStats"></div>
+<div class="card glass" style="margin-bottom:14px"><h2>Next medication</h2><div id="medCountHome"></div></div>
+<div class="card glass"><h2>Recent activity</h2><div id="recent"></div></div>
+<div class="card" style="margin-top:14px"><h2>Preview tools</h2><p class="msg">Temporary buttons for testing the layout. Remove them once the database is connected.</p><button class="save" id="btnSample" style="margin-top:0">Load sample data</button><button class="save" id="btnClear" style="background:#2F343C;color:#f1efec">Clear all data</button></div>
+</section>
+<section id="v-reports" class="hide">
+
+<h2 class="sec">Birds</h2>
+<div class="stats" id="birdStats"></div>
+<div class="cols charts"><div class="card glass wide"><h2>Daily bird records</h2><div id="birdList"></div></div></div>
+
+<h2 class="sec">Eggs</h2>
+<div class="stats" id="eggStats"></div>
+<div class="cols charts"><div class="card glass wide"><h2>Daily egg records</h2><div id="eggList"></div></div></div>
+<h2 class="sec">Finances</h2>
+<div class="stats" id="moneyStats"></div>
+<div class="cols charts"><div class="card glass wide"><h2>Daily finances</h2><div id="finTbl"></div></div><div class="card glass wide"><h2>Daily expenses</h2><div id="expTbl"></div></div></div>
+<h2 class="sec">Reports</h2>
+<div class="card glass" id="repCard"><h2>Report</h2><label style="margin-top:0">Show one date only (clear it to see all dates)</label><input type="date" id="repDate"><div class="nop" style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="ubtn" id="repCsv" style="padding:10px 14px;font-size:14px">Download report (CSV)</button><button class="ubtn" id="repPrint" style="padding:10px 14px;font-size:14px">Print / save as PDF</button></div><div id="repTbl" style="margin-top:14px"></div><div id="repList"></div></div>
+</section>
+<section id="v-feeding" class="hide">
+<div class="stats" id="feedStats"></div>
+<div class="cols charts"><div class="card glass wide"><h2>Daily feed summary</h2><div id="feedDay"></div></div>
+<div class="card glass wide"><h2>Feeding records</h2><div id="feedTbl"></div></div>
+</div>
+</section>
+<section id="v-meds" class="hide">
+<div class="card glass" style="margin-bottom:14px"><h2>Countdown to next medication</h2><div id="medCount"></div></div>
+<div class="cols charts"><div class="card glass wide"><h2>Whole farm medication</h2><div id="medTbl"></div></div>
+<div class="card glass wide"><h2>Sick birds</h2><div id="sickTbl"></div></div></div>
+</section>
+<section id="v-users" class="hide">
+<div class="cols charts">
+<div class="card glass"><h2>Add a user</h2>
+<label style="margin-top:0">Full name</label><input id="un" autocomplete="off">
+<label>Username</label><input id="uu" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
+<label>Password (at least 6 characters)</label><input id="up" type="text" autocomplete="off" autocapitalize="none">
+<label>Role</label><select id="ur"><option value="worker">Worker</option><option value="admin">Admin</option></select>
+<div class="err" id="uerr"></div><button class="save" id="uadd" style="margin-top:6px">Create account</button></div>
+<div class="card glass"><h2>Accounts</h2><div id="ulist"></div></div>
+</div></section>
+</div>
+
+<script>
+var TYPES={
+ added:{n:"Add birds",ic:"i-chick",q:"Number of birds to add",a:"Cost (optional)"},
+ sold:{n:"Birds sold",ic:"i-sold",q:"Number of birds sold",a:"Total amount received"},
+ 
+ died:{n:"Birds died",ic:"i-henx",q:"Number of birds died"},
+ sick:{n:"Sick birds",ic:"i-sick",q:"Number of sick birds"},
+ eggs:{n:"Eggs collected",ic:"i-eggs",q:"Number of eggs collected"},
+ eggsold:{n:"Eggs sold",ic:"i-eggsold",q:"Number of eggs sold",a:"Total amount received"},
+ feed:{n:"Feed bought",ic:"i-sack",q:"Feed (kg or bags)",a:"Cost",hide:1},
+ expense:{n:"Expense",ic:"i-coin",a:"Amount spent",noq:1,cat:1},
+ feedin:{n:"Feed added",ic:"i-sackplus",q:"Feed added (grams)"},
+ feeding:{n:"Feeding",ic:"i-sack",q:"Feed used (grams)",time:1},
+ meds:{n:"Medication",ic:"i-pill",noq:1,time:1,med:1,next:1},
+ sicktreat:{n:"Sick bird treatment",ic:"i-sickrx",q:"Number of birds treated",time:1,med:1,ill:1}
+};
+var cur="added",recs=[],localRecs=[],uid="anon",uname="",isAdmin=false;
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function ymd(d){var m=d.getMonth()+1,x=d.getDate();return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(x<10?"0":"")+x}
+function today(){return ymd(new Date())}
+function num(x){return Number(x)||0}
+function fmt(n){return Math.round(n*100)/100}
+function nowT(){var d=new Date();return("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2)}
+function gh(n){return "GH₵"+fmt(n)}
+function ic(id,c){return '<svg class="ic '+(c||"")+'" viewBox="0 0 64 64"><use href="#'+id+'"/></svg>'}
+function setDateTxt(){$("dateTxt").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"})}setDateTxt();
+var curDay="";function dayCheck(){var t=today();if(curDay&&t!==curDay){if($("date").value===curDay)$("date").value=t;setDateTxt();render()}curDay=t}
+
+/* ===== DATA LAYER: swap this object for fetch() calls to your Neon-backed API =====
+   list(): returns all records; add(rec); remove(id).  Record shape:
+   {type, qty, amount, note, cat, date:"YYYY-MM-DD", by, ts} */
+var KEY="poultry_records_v1";
+/* TEMPORARY local store (saves in this browser only) so the interface works on its own.
+   Replace this whole object with calls to your Neon-backed API: add(rec), remove(id), watch(cb). */
+var store={db:true,cb:null,
+ load:function(){try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){return[]}},
+ save:function(a){try{localStorage.setItem(KEY,JSON.stringify(a))}catch(e){}},
+ add:function(r){var a=this.load();r.id="r"+Date.now()+Math.random().toString(36).slice(2,7);a.unshift(r);this.save(a);if(this.cb)this.cb(a);return Promise.resolve(r)},
+ remove:function(id){var a=this.load().filter(function(r){return r.id!==id});this.save(a);if(this.cb)this.cb(a);return Promise.resolve()},
+ update:function(id,p){var a=this.load();a.forEach(function(r){if(r.id===id)for(var k in p)r[k]=p[k]});this.save(a);if(this.cb)this.cb(a);return Promise.resolve()},
+ watch:function(cb){this.cb=cb;cb(this.load())}
+};
+function sample(){var a=[],now=new Date(),i,d;
+ function A(date,type,qty,amount,sex,cat){a.push({id:"s"+a.length+"x"+Date.now(),type:type,qty:qty,amount:amount||0,note:"",cat:cat||"",sex:sex||"",date:date,by:"sample",byName:"Sample",ts:new Date(date).getTime()+a.length})}
+ A(ymd(new Date(now.getTime()-10*864e5)),"added",200);A(ymd(new Date(now.getTime()-10*864e5)),"feedin",250000);
+ for(i=9;i>=0;i--){d=ymd(new Date(now.getTime()-i*864e5));A(d,"eggs",90+((i*7)%40));
+  if(i%3===0)A(d,"eggsold",60,90);if(i===4)A(d,"feedin",100000);if(i%4===1)A(d,"sold",5+i%3,(5+i%3)*85,i%2?"male":"female");
+  if(i%5===2)A(d,"died",1,0,"female");if(i===3)A(d,"sick",3);A(d,"expense",0,40+i*5,"","Labour");if(i%3===1)A(d,"expense",0,300,"","Feed");A(d,"feeding",12000+(i%3)*500);a[a.length-1].time="07:00";A(d,"feeding",10000);a[a.length-1].time="16:30";
+  if(i===3){A(d,"sicktreat",3);var w=a[a.length-1];w.ill="Coccidiosis";w.med="Amprolium";w.time="09:15";A(d,"meds",0);w=a[a.length-1];w.med="Vitamins";w.time="08:00";w.next=ymd(new Date(now.getTime()+4*864e5))}}
+ a.sort(function(x,y){return y.ts-x.ts});store.save(a);store.cb(a)}
+
+function sum(t,d){return recs.reduce(function(s,r){return s+(r.type===t&&(!d||r.date===d)?num(r.qty):0)},0)}
+function expAmt(r){return(r.type==="expense"||r.type==="feed"||r.type==="added")?num(r.amount):0}
+function saleAmt(r){return(r.type==="sold"||r.type==="eggsold")?num(r.amount):0}
+function editRec(id){var r=recs.filter(function(x){return x.id===id})[0];if(!r)return;if(!canEdit(r)){alert("You can only change your own entries from today.");return}
+ var T=TYPES[r.type]||{},p={},parts=[],v;
+ if(!T.noq){v=prompt("Correct the number (it is "+r.qty+" now):",r.qty);if(v===null)return;v=Number(v);if(isNaN(v)||v<0){alert("Please enter a valid number.");return}p.qty=v;parts.push(r.qty)}
+ if(T.a){v=prompt("Correct the amount in GH\u20b5 (it is "+(r.amount||0)+" now):",r.amount||0);if(v===null)return;v=Number(v);if(isNaN(v)||v<0){alert("Please enter a valid number.");return}p.amount=v;parts.push("GH\u20b5"+(r.amount||0))}
+ if(!parts.length){alert("This record has no number to correct. Delete it and add it again.");return}
+ p.edited=true;p.was=r.edited?r.was:parts.join(", ");store.update(id,p)}
+function repRows(){var d=$("repDate").value,r=dayRows();return d?r.filter(function(o){return o.date===d}):r}
+function plain(h){var e=document.createElement("div");e.innerHTML=h;return e.textContent}
+function csvDownload(){var rows=repRows();if(!rows.length){alert("There is nothing to download yet.");return}
+ var q=function(t){return '"'+String(t).replace(/"/g,'""')+'"'},lines=[REPC.map(function(c){return q(c[0])}).join(",")];
+ rows.forEach(function(o){lines.push(REPC.map(function(c){return q(plain(c[1](o)))}).join(","))});
+ var blob=new Blob(["\ufeff"+lines.join("\r\n")],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);a.download="farm-report-"+($("repDate").value||"all-dates")+".csv";document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)}
+function daily(){var d=$("repDate").value,rows=dayRows();
+ if(d)rows=rows.filter(function(o){return o.date===d});
+ $("repTbl").innerHTML=d&&!rows.length?'<div class="empty">No records on this date.</div>':tbl(REPC,rows,"rep");
+ var day=d?recs.filter(function(r){return r.date===d}):[];
+ $("repList").innerHTML=day.length?'<h2 style="margin-top:18px">Entries on this date</h2>'+plist(day.map(rowHtml),"replist"):""}
+function cnt(x){return recs.reduce(function(s,r){var q=num(r.qty);if(r.type===x)return s+q;if(r.sex!==x)return s;if(r.type==="added")return s+q;if(r.type==="sold"||r.type==="died")return s-q;return s},0)}
+function total(){return recs.reduce(function(s,r){var q=num(r.qty);return s+(r.type==="total"||r.type==="added"?q:(r.type==="sold"||r.type==="died"?-q:0))},0)}
+function period(start){var s=0,e=0;recs.forEach(function(r){if(r.date>=start){s+=saleAmt(r);e+=expAmt(r)}});return[s,e]}
+
+function buildTypes(){
+ $("types").innerHTML=Object.keys(TYPES).filter(function(k){return!TYPES[k].hide}).map(function(k){return '<button data-k="'+k+'" class="'+(k===cur?"on":"")+'">'+ic(TYPES[k].ic)+TYPES[k].n+'</button>'}).join("");
+ Array.prototype.forEach.call($("types").children,function(b){b.onclick=function(){cur=b.dataset.k;buildTypes();labels()}});
+}
+function labels(){var t=TYPES[cur];$("qtyW").classList.toggle("hide",!!t.noq);$("catW").classList.toggle("hide",!t.cat);$("sexW").classList.toggle("hide",!t.sex);$("timeW").classList.toggle("hide",!t.time);$("medW").classList.toggle("hide",!t.med);$("illW").classList.toggle("hide",!t.ill);$("nextW").classList.toggle("hide",!t.next);if(t.time)$("tm").value=nowT();$("amtW").classList.toggle("hide",!t.a);if(t.q)$("qtyL").textContent=t.q;if(t.a)$("amtL").textContent=t.a+" (GH₵)"}
+
+function sameDay(ts){return ymd(new Date(ts))===today()}
+function canEdit(r){return isAdmin||(r.by===uid&&sameDay(r.ts))}
+function editBtn(r){return '<button data-edit="'+esc(r.id)+'">Edit</button>'}
+function delBtn(r){return '<button data-del="'+esc(r.id)+'">Delete</button>'}
+function rowHtml(r){return rowBase(r,isAdmin&&r.id?editBtn(r)+delBtn(r):"")}
+function rowMine(r){return rowBase(r,r.id&&canEdit(r)?editBtn(r):"")}
+function rowBase(r,btns){var t=TYPES[r.type]||{n:r.type,ic:"i-egg"};
+ return '<div class="row">'+ic(t.ic)+'<div><b>'+esc(t.n)+': '+esc(r.type==="expense"?r.cat:r.type==="meds"?r.med:r.type==="feeding"?fg(r.qty)+" used":r.type==="feedin"?fg(r.qty)+" added":r.type==="sicktreat"?r.qty+" · "+r.ill+" · "+r.med:r.qty)+(r.sex?' ('+esc(r.sex)+')':'')+'</b>'+(num(r.amount)?' · '+gh(r.amount):'')+'<small>'+esc(r.date+(r.time?" "+r.time:""))+(isAdmin&&(r.byName||r.by)?' · by '+esc(r.byName||r.by):'')+(r.note?' · '+esc(r.note):'')+(r.edited?' · edited (was '+esc(r.was)+')':'')+'</small></div>'+btns+'</div>'}
+
+var CRATE=30; /* eggs per crate */
+var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function dd(d){var p=d.split("-");return +p[2]+" "+MON[+p[1]-1]+" "+p[0]}
+function z(n){return n?fmt(n):"\u2013"}
+function g(n){return n?gh(n):"\u2013"}
+function v(k){return function(o){return z(o[k])}}
+function gv(k){return function(o){return g(o[k])}}
+function bo(k){return function(o){return "<b>"+o[k]+"</b>"}}
+var cD=["Date",function(o){return dd(o.date)}];
+var cN=["Net",function(o){var n=o.sa-o.ex;return '<span class="'+(n<0?"neg":"pos")+'">'+gh(n)+'</span>'}];
+var EGGC=[cD,["Collected",v("ec")],["Sold",v("es")],["In stock",bo("E")],["Crates",function(o){return Math.floor(Math.max(o.E,0)/CRATE)}]];
+var BIRDC=[cD,["Total birds",bo("T")],["Sold",v("bs")],["Died",v("dd")],["Sick",v("sk")],["New",v("nw")]];
+var FINC=[cD,["Birds sold",v("bs")],["Birds sales",gv("bsa")],["Eggs sold",v("es")],["Eggs sales",gv("esa")],["Total made",function(o){return "<b>"+gh(o.sa)+"</b>"}],["Expenses",gv("ex")],cN];
+var EXPC=[cD,["Birds",gv("eb")],["Medication",gv("em")],["Feed",gv("ef")],["Labour",gv("el")],["Other",gv("eo")],["Total expenses",function(o){return "<b>"+gh(o.ex)+"</b>"}]];
+var REPC=[cD,["Birds sold",v("bs")],["Eggs sold",v("es")],["Sales",gv("sa")],["Expenses",gv("ex")],cN,["Eggs collected",v("ec")],["Eggs in stock",bo("E")],["Feed used (g)",v("fu")],["Feed count",v("fc")],["Feed remaining (g)",bo("FB")],["Died",v("dd")],["Sick",v("sk")],["New birds",v("nw")],["Total birds",bo("T")]];
+var OPEN={},LIM=10;
+function moreBar(key,n){if(n<=LIM)return "";return OPEN[key]?'<button class="more" data-less="'+key+'">Show less</button>':'<button class="more" data-more="'+key+'">See more ('+(n-LIM)+' more)</button>'}
+function plist(items,key){return(OPEN[key]?items:items.slice(0,LIM)).join("")+moreBar(key,items.length)}
+function tbl(cols,rows,key){if(!rows.length)return '<div class="empty">No records yet.</div>';var sh=OPEN[key]?rows:rows.slice(0,LIM);
+ return '<div class="scroll"><table class="dt"><tr>'+cols.map(function(c){return '<th>'+c[0]+'</th>'}).join("")+'</tr>'+sh.map(function(o){return '<tr>'+cols.map(function(c){return '<td>'+c[1](o)+'</td>'}).join("")+'</tr>'}).join("")+'</table></div>'+moreBar(key,rows.length)}
+function dayRows(){var ds=[],M=0,F=0,E=0,FB=0;
+ recs.forEach(function(r){if(ds.indexOf(r.date)<0)ds.push(r.date)});ds.sort();
+ return ds.map(function(d){var o={date:d,bs:0,es:0,ec:0,dd:0,sk:0,nw:0,sa:0,ex:0,bd:0,bsa:0,esa:0,eb:0,em:0,ef:0,el:0,eo:0,fu:0,fc:0};
+  recs.forEach(function(r){if(r.date!==d)return;var q=num(r.qty),t=r.type;
+   if(t==="added"){o.nw+=q;o.bd=1;M+=q}else if(t==="sold"||t==="died"){o[t==="sold"?"bs":"dd"]+=q;o.bd=1;M-=q}
+   else if(t==="sick"){o.sk+=q;o.bd=1}
+   else if(t==="eggs"){o.ec+=q;E+=q}else if(t==="eggsold"){o.es+=q;E-=q}
+   o.sa+=saleAmt(r);o.ex+=expAmt(r);if(t==="sold")o.bsa+=num(r.amount);if(t==="eggsold")o.esa+=num(r.amount);if(t==="feedin")FB+=q;else if(t==="feeding"){o.fu+=q;o.fc++;FB-=q}var ea=expAmt(r);if(ea){o[t==="added"?"eb":t==="feed"?"ef":r.cat==="Medicine"?"em":r.cat==="Feed"?"ef":r.cat==="Labour"?"el":"eo"]+=ea}});
+  o.T=M;o.E=E;o.FB=FB;return o}).reverse()}
+function fn(n){return fmt(num(n)).toLocaleString()}
+function fg(n){return fmt(num(n)).toLocaleString()+" g"}
+function dayFeed(){var ds=[],m={};recs.forEach(function(r){if(r.type!=="feedin"&&r.type!=="feeding")return;if(!m[r.date]){m[r.date]={date:r.date,a:0,u:0,n:0};ds.push(r.date)}if(r.type==="feeding")m[r.date].n++;m[r.date][r.type==="feedin"?"a":"u"]+=num(r.qty)});ds.sort();var bal=0;return ds.map(function(d){var o=m[d];bal+=o.a-o.u;o.r=bal;return o}).reverse()}
+function toDay(x){var p=x.split("-");return new Date(+p[0],+p[1]-1,+p[2])}
+function daysLeft(x){return Math.round((toDay(x)-toDay(today()))/864e5)}
+function statH(l,v,i){return '<div class="stat">'+ic(i)+'<div><b>'+esc(v)+'</b><span>'+l+'</span></div></div>'}
+function byTime(a,b){return(b.date+(b.time||"")).localeCompare(a.date+(a.time||""))}
+function renderExtra(){
+ var td=today(),wk=ymd(new Date(Date.now()-6*864e5)),fe=recs.filter(function(r){return r.type==="feeding"}).sort(byTime),tA=0,tU=0,uT=0,uW=0,nT=0;
+ recs.forEach(function(r){var q=num(r.qty);if(r.type==="feedin")tA+=q;if(r.type==="feeding"){tU+=q;if(r.date===td){uT+=q;nT++}if(r.date>=wk)uW+=q}});
+ $("feedStats").innerHTML=statH("Total feed added (g)",fn(tA),"i-sackplus")+statH("Feed used today (g)",fn(uT),"i-sack")+statH("Feed count today",nT,"i-sack")+statH("Feed remaining (g)",fn(tA-tU),"i-sack");
+ $("feedDay").innerHTML=tbl([cD,["Added (g)",function(o){return z(o.a)}],["Used (g)",function(o){return z(o.u)}],["Feed count",function(o){return z(o.n)}],["Remaining (g)",function(o){return "<b>"+fmt(o.r)+"</b>"}]],dayFeed(),"feedday");
+ $("feedTbl").innerHTML=tbl([cD,["Time",function(r){return esc(r.time||"\u2013")}],["Feed used (g)",function(r){return "<b>"+fmt(num(r.qty))+"</b>"}]],fe,"feed");
+ var md=recs.filter(function(r){return r.type==="meds"}).sort(byTime),last={};
+ md.forEach(function(r){var k=(r.med||"").toLowerCase();if(!last[k])last[k]=r});
+ var due=Object.keys(last).map(function(k){return last[k]}).filter(function(r){return r.next}).sort(function(a,b){return a.next.localeCompare(b.next)});
+ var ch=due.length?due.map(function(r){var d=daysLeft(r.next),t=d<0?"Overdue by "+(-d)+" day"+(d===-1?"":"s"):d===0?"Due today":d+" day"+(d===1?"":"s")+" left";
+  return '<div class="row">'+ic("i-pill")+'<div><b>'+esc(r.med)+'</b><small>Next: '+dd(r.next)+'</small></div><b class="'+(d<=0?"neg":d<=2?"warn":"pos")+'">'+t+'</b></div>'}).join(""):'<div class="empty">'+(md.length?'Medication was recorded, but no next date was set, so there is nothing to count down to.':'No upcoming medication. Record a medication with a next date.')+'</div>';
+ $("medCount").innerHTML=ch;$("medCountHome").innerHTML=ch;
+ $("medTbl").innerHTML=tbl([cD,["Time",function(r){return esc(r.time||"\u2013")}],["Medication",function(r){return esc(r.med)}],["Next due",function(r){return r.next?dd(r.next):"\u2013"}],["Countdown",function(r){if(!r.next)return "\u2013";var d=daysLeft(r.next);return d<0?"Overdue":d+" day"+(d===1?"":"s")}]],md,"med");
+ $("sickTbl").innerHTML=tbl([cD,["Time",function(r){return esc(r.time||"\u2013")}],["Sickness",function(r){return esc(r.ill)}],["Medication given",function(r){return esc(r.med)}],["Birds",function(r){return fmt(num(r.qty))}]],recs.filter(function(r){return r.type==="sicktreat"}).sort(byTime),"sick")}
+function render(){
+ var td=today(),mine=isAdmin?recs.filter(function(r){return r.date===td}):recs.filter(function(r){return r.by===uid&&sameDay(r.ts)});
+ $("mineH").textContent=isAdmin?"Today's entries":"Your entries today";
+ $("mine").innerHTML=mine.length?plist(mine.map(isAdmin?rowHtml:rowMine),"mine"):'<div class="empty">'+ic("i-egg","")+'Nothing recorded yet today.</div>';
+ 
+ var tt=total();
+ var eg=Math.max(sum("eggs")-sum("eggsold"),0),cr=Math.floor(eg/CRATE),lo=eg-cr*CRATE;var st=[["Total birds in stock",tt,"i-hen"],["Sales today",gh(period(td)[0]),"i-coin"],["Birds sold today",sum("sold",td),"i-sold"],["Eggs in stock",sum("eggs")-sum("eggsold"),"i-eggs"],["Eggs collected today",sum("eggs",td),"i-eggs"],["Eggs sold today",sum("eggsold",td),"i-eggsold"],["Deaths today",sum("died",td),"i-henx"],["Sick reported today",sum("sick",td),"i-sick"],["Expenses today",gh(period(td)[1]),"i-coin"],["New birds today",sum("added",td),"i-chick"],["Crates in stock"+(lo?" (+"+lo+" eggs)":""),cr,"i-eggs"],["Feed remaining (g)",fn(sum("feedin")-sum("feeding")),"i-sack"]];
+ function cards(ids){return ids.map(function(i){var x=st[i];return '<div class="stat">'+ic(x[2])+'<div><b>'+esc(x[1])+'</b><span>'+x[0]+'</span></div></div>'}).join("")}
+ function listOf(ts){var a=recs.filter(function(r){return ts.indexOf(r.type)>-1}).slice(0,15);return a.length?a.map(rowHtml).join(""):'<div class="empty">No records yet.</div>'}
+ st[1][0]="Total made today";var nt=gh(period(td)[0]-period(td)[1]);$("homeStats").innerHTML=cards([0,3,10,11]);$("birdStats").innerHTML=cards([0,6,7,9]);$("eggStats").innerHTML=cards([3,10,4]);$("moneyStats").innerHTML=cards([2,5,8,1])+'<div class="stat">'+ic("i-coin")+'<div><b>'+esc(nt)+'</b><span>Net today</span></div></div>';
+ var DR=dayRows();$("birdList").innerHTML=tbl(BIRDC,DR.filter(function(o){return o.bd}),"bird");$("eggList").innerHTML=tbl(EGGC,DR.filter(function(o){return o.ec||o.es}),"egg");$("finTbl").innerHTML=tbl(FINC,DR.filter(function(o){return o.sa||o.ex}),"fin");
+ var d=new Date(),k=(d.getDay()+6)%7;d.setDate(d.getDate()-k);
+ var rows=[["Today",td],["This week",ymd(d)],["This month",td.slice(0,8)+"01"]];
+ 
+ $("expTbl").innerHTML=tbl(EXPC,DR.filter(function(o){return o.ex}),"exp");
+ daily();renderExtra();$("recent").innerHTML=recs.length?plist(recs.map(rowHtml),"recent"):'<div class="empty">No records yet.</div>';
+ Array.prototype.forEach.call(document.querySelectorAll("[data-del]"),function(b){b.onclick=function(){if(confirm("Delete this record?"))store.remove(b.dataset.del).catch(function(){alert("Could not delete")})}});
+ Array.prototype.forEach.call(document.querySelectorAll("[data-edit]"),function(b){b.onclick=function(){editRec(b.dataset.edit)}});
+}
+var NAV=[["home","Home","i-hen"],["record","Record","i-chick"],["feeding","Feeding","i-sack"],["meds","Medication","i-pill"],["reports","Overview","i-report"],["users","Users","i-users"]];
+var FARM_NAME="Guide Farms";
+function heroFor(v){var h=NAV.filter(function(x){return x[0]===v})[0];$("title").textContent=v==="home"?FARM_NAME:(h?h[1]:"Record");$("dateTxt").classList.toggle("hide",v==="home")}
+function setView(v){heroFor(v);render();if(v==="users")renderUsers();NAV.forEach(function(x){var e=$("v-"+x[0]);if(e)e.classList.toggle("hide",x[0]!==v)});Array.prototype.forEach.call($("nav").children,function(b){b.classList.toggle("on",b.dataset.v===v)});window.scrollTo(0,0)}
+function buildNav(only){var n=$("nav");n.classList.remove("hide");document.body.classList.add("hasnav");n.innerHTML=NAV.filter(function(x){return!only||only.indexOf(x[0])>-1}).map(function(x){return '<button data-v="'+x[0]+'">'+ic(x[2])+x[1]+'</button>'}).join("");Array.prototype.forEach.call(n.children,function(b){b.onclick=function(){setView(b.dataset.v)}})}
+
+$("save").onclick=function(){
+ var noq=!!TYPES[cur].noq,q=noq?0:num($("qty").value);
+ if(noq?(TYPES[cur].a&&!num($("amt").value)):!q){alert("Please enter a number");return}
+ if(TYPES[cur].next&&!$("nx").value){alert("Please choose the next medication date so the countdown can start");return}
+ if(TYPES[cur].med&&!$("md").value.trim()){alert("Please enter the medication given");return}
+ if(TYPES[cur].ill&&!$("il").value.trim()){alert("Please enter the type of sickness");return}
+ if(!store.db){alert("Not connected. Open this page from the shared link and sign in.");return}
+ if(TYPES[cur].sex&&!$("sex").value){alert("Please choose male or female");return}
+ var b=$("save");b.disabled=true;
+ var rec={type:cur,qty:q,amount:num($("amt").value),note:$("nt").value.trim(),cat:TYPES[cur].cat?$("cat").value:"",sex:TYPES[cur].sex?$("sex").value:"",time:TYPES[cur].time?$("tm").value:"",med:TYPES[cur].med?$("md").value.trim():"",ill:TYPES[cur].ill?$("il").value.trim():"",next:TYPES[cur].next?$("nx").value:"",date:$("date").value||today(),by:uid,byName:uname,ts:Date.now()};
+ store.add(rec).then(function(){
+  if(!isAdmin){localRecs.unshift(rec);render()}
+  $("qty").value="";$("amt").value="";$("nt").value="";$("sex").value="";$("md").value="";$("il").value="";$("nx").value="";
+  $("saved").textContent="Saved ✓";setTimeout(function(){$("saved").textContent=""},2500);
+ }).catch(function(){alert("Could not save. Check your connection and try again.")}).then(function(){b.disabled=false});
+};
+function note(t){var n=$("note");n.textContent=t;n.classList.remove("hide")}
+buildTypes();labels();heroFor("record");$("date").value=today();$("repDate").onchange=render;render();
+
+var ROLE="worker";
+/* ===== TEMPORARY accounts (kept in this browser only). Replace `auth` with calls to your server/Neon:
+   login(username,password) -> {name,username,role,active}; users(); add(); toggle(); reset(); remove().
+   Real password checking MUST happen on the server. ===== */
+var UKEY="poultry_users_v1",SKEY="poultry_session_v1";
+function sha(t){return crypto.subtle.digest("SHA-256",new TextEncoder().encode(t)).then(function(h){return Array.prototype.map.call(new Uint8Array(h),function(x){return("0"+x.toString(16)).slice(-2)}).join("")})}
+var auth={
+ users:function(){try{return JSON.parse(localStorage.getItem(UKEY)||"[]")}catch(e){return[]}},
+ save:function(a){try{localStorage.setItem(UKEY,JSON.stringify(a))}catch(e){}},
+ seed:function(){var t=this;if(t.users().length)return Promise.resolve();return sha("admin:admin123").then(function(h){t.save([{name:"Farm Admin",username:"admin",role:"admin",active:true,hash:h}])})},
+ login:function(u,p){u=u.trim().toLowerCase();var t=this;return sha(u+":"+p).then(function(h){var x=t.users().filter(function(r){return r.username===u&&r.hash===h})[0];if(!x)throw new Error("Wrong username or password.");if(!x.active)throw new Error("This account is switched off. Please contact the admin.");return x})},
+ add:function(o){var t=this;return Promise.resolve().then(function(){
+  if(!o.name)throw new Error("Please enter the full name.");
+  if(!/^[a-z0-9._-]{3,}$/.test(o.username))throw new Error("Username: at least 3 letters or numbers, no spaces.");
+  if(o.password.length<6)throw new Error("Password must be at least 6 characters.");
+  if(t.users().some(function(r){return r.username===o.username}))throw new Error("That username is already taken.");
+  return sha(o.username+":"+o.password)}).then(function(h){var a=t.users();a.push({name:o.name,username:o.username,role:o.role,active:true,hash:h});t.save(a)})},
+ toggle:function(n){var a=this.users();a.forEach(function(r){if(r.username===n)r.active=!r.active});this.save(a)},
+ remove:function(n){this.save(this.users().filter(function(r){return r.username!==n}))},
+ reset:function(n,p){var t=this;return sha(n+":"+p).then(function(h){var a=t.users();a.forEach(function(r){if(r.username===n)r.hash=h});t.save(a)})}
+};
+function renderUsers(){
+ $("ulist").innerHTML=auth.users().map(function(u){var me=u.username===uid,n=esc(u.username);
+  return '<div class="row u">'+ic(u.role==="admin"?"i-hen":"i-chick")+'<div><b>'+esc(u.name)+'</b><small>'+n+' \u00b7 '+(u.role==="admin"?"Admin":"Worker")+' \u00b7 '+(u.active?"Active":"Switched off")+'</small></div>'+
+  (me?'<small>You</small>':'<div class="act"><button class="ubtn" data-a="t" data-u="'+n+'">'+(u.active?"Switch off":"Switch on")+'</button><button class="ubtn" data-a="r" data-u="'+n+'">Reset password</button><button class="ubtn" data-a="d" data-u="'+n+'">Delete</button></div>')+'</div>'}).join("");
+ Array.prototype.forEach.call(document.querySelectorAll("[data-a]"),function(b){b.onclick=function(){var a=b.dataset.a,n=b.dataset.u;
+  if(a==="t")auth.toggle(n);
+  else if(a==="d"){if(!confirm("Delete the account "+n+"?"))return;auth.remove(n)}
+  else{var p=prompt("New password for "+n+" (at least 6 characters):");if(!p)return;if(p.length<6){alert("Password is too short.");return}auth.reset(n,p).then(function(){alert("Password changed.")});return}
+  renderUsers()}})}
+function start(u){ROLE=u.role;isAdmin=ROLE==="admin";uid=u.username;uname=u.name;
+ $("role").textContent=(isAdmin?"Admin":"Worker")+" \u00b7 "+u.name;$("signout").classList.remove("hide");$("login").classList.add("hide");
+ buildNav(isAdmin?null:["home","record","feeding","meds"]);store.watch(function(a){recs=a;render()});setView(isAdmin?"home":"record");if(!isAdmin)$("btnSample").parentNode.classList.add("hide");
+ render()}
+(function(){
+ $("ltitle").textContent=FARM_NAME;
+ dayCheck();setInterval(dayCheck,30000);document.addEventListener("visibilitychange",function(){if(!document.hidden)dayCheck()});window.addEventListener("focus",dayCheck);
+ $("btnSample").onclick=sample;document.addEventListener("click",function(e){var t=e.target.closest&&e.target.closest("[data-more],[data-less]");if(!t)return;OPEN[t.dataset.more||t.dataset.less]=!!t.dataset.more;render()});$("repCsv").onclick=csvDownload;$("repPrint").onclick=function(){window.print()};$("btnClear").onclick=function(){if(confirm("Clear all saved data?")){store.save([]);store.cb([])}};
+ $("lshow").onclick=function(){var p=$("lp"),h=p.type==="password";p.type=h?"text":"password";$("lshow").textContent=h?"Hide":"Show"};
+ $("signout").onclick=function(){try{localStorage.removeItem(SKEY)}catch(e){}location.reload()};
+ $("uadd").onclick=function(){$("uerr").textContent="";auth.add({name:$("un").value.trim(),username:$("uu").value.trim().toLowerCase(),password:$("up").value,role:$("ur").value}).then(function(){["un","uu","up"].forEach(function(i){$(i).value=""});renderUsers()}).catch(function(e){$("uerr").textContent=e.message})};
+ $("lf").onsubmit=function(e){e.preventDefault();$("lerr").textContent="";
+  auth.login($("lu").value,$("lp").value).then(function(u){try{localStorage.setItem(SKEY,u.username)}catch(x){}start(u)}).catch(function(x){$("lerr").textContent=x.message||"Could not sign in."})};
+ if(!window.crypto||!crypto.subtle){$("lerr").textContent="Please open this page over a secure (https) link.";return}
+ auth.seed().then(function(){var n="";try{n=localStorage.getItem(SKEY)}catch(e){}var u=n&&auth.users().filter(function(r){return r.username===n&&r.active})[0];if(u)start(u);else $("lu").focus()})
+})();
+</script></body></html>
